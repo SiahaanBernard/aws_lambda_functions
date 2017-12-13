@@ -25,25 +25,29 @@ def describe_alarms(cw,ec2):
     and delete the alarm if the instance of the alarm is not exist
     '''
     unused_alarms = []
-    delete_alarms = []
+    insufficient_alarms = []
     try:
-        unused_alarms = cw.describe_alarms(
+        insufficient_alarms = cw.describe_alarms(
             StateValue='INSUFFICIENT_DATA'
         )
     except Exception, e:
-        print("ther is no alarm with state INSUFFICIENT_DATA")
+        print("there is no alarm with state INSUFFICIENT_DATA")
 
-    unused_alarms = unused_alarms['MetricAlarms']
-    for alarm in unused_alarms:
+    insufficient_alarms = insufficient_alarms['MetricAlarms']
+    for alarm in insufficient_alarms:
         if alarm['Namespace'] == "AWS/EC2":
             instance_id = alarm['Dimensions'][0]['Value']
             if not is_instance_exist(instance_id,ec2):
                 alarm_name = alarm['AlarmName']
-                delete_alarms.append(alarm_name)
+                unused_alarms.append(alarm_name)
+
+#    delete_cloudwatch_alarms(unused_alarms)
+
+def delete_cloudwatch_alarms(cw,alarms):
     try:
-        cw.delete_alarms(AlarmNames=[delete_alarms])
+        cw.delete_alarms(AlarmNames=[alarms])
         print("deleted alarm:")
-        for alarm in delete_alarms:
+        for alarm in alarms:
             print(alarm)
     except Exception, e:
         print(e)
