@@ -19,7 +19,7 @@ def is_instance_exist(instance_id,ec2):
     except Exception, e:
         return False
 
-def describe_alarms(cwclient,ec2client):
+def describe_alarms(cw,ec2):
     '''
     This function will describe alarms where the state Value is INSUFFICIENT_DATA
     and delete the alarm if the instance of the alarm is not exist
