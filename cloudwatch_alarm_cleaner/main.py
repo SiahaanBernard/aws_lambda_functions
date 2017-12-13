@@ -5,7 +5,7 @@ import time
 def lambda_handler(event, context):
     cw = boto3.client('cloudwatch')
     ec2 = boto3.client('ec2')
-    describe_alarms(cw,ec2)
+    describe_cloudwatch_alarms(cw,ec2)
 
 def is_instance_exist(instance_id,ec2):
     '''
@@ -19,7 +19,7 @@ def is_instance_exist(instance_id,ec2):
     except Exception, e:
         return False
 
-def describe_alarms(cw,ec2):
+def describe_cloudwatch_alarms(cw,ec2):
     '''
     This function will describe alarms where the state Value is INSUFFICIENT_DATA
     and delete the alarm if the instance of the alarm is not exist
