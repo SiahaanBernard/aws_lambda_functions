@@ -41,7 +41,7 @@ def describe_cloudwatch_alarms(cw,ec2):
                 alarm_name = alarm['AlarmName']
                 unused_alarms.append(alarm_name)
 
-#    delete_cloudwatch_alarms(unused_alarms)
+    delete_cloudwatch_alarms(unused_alarms)
 
 def delete_cloudwatch_alarms(cw,alarms):
     try:
