@@ -1,6 +1,16 @@
 import boto3
 import sys
 import time
+from retrying import retry
+
+
+def retry_on_request_limit_exceed(e):
+    if "RequestLimitExceeded" in e.message:
+        print "RequestLimitExceeded exception occurs, retrying..."
+        return True
+    else:
+        return False
+
 
 def lambda_handler(event, context):
     logs = boto3.client('logs')
@@ -16,39 +26,54 @@ def describe_all_log_groups(logs):
         loggroups = logs.describe_log_groups()
     except Exception, e:
         print e
-    
+
     loggroups = loggroups['logGroups']
     for loggroup in loggroups:
         loggroup_size = loggroup['storedBytes']
         if loggroup_size == 0:
             unused_loggroups.append(loggroup['logGroupName'])
-        else: 
+        else:
             used_loggroups.append(loggroup['logGroupName'])
 
-    describe_log_stream(logs,used_loggroups)
+    describe_log_streams(logs, used_loggroups)
 
-def describe_log_stream(logs,loggroups):
+
+@retry(retry_on_exception=retry_on_request_limit_exceed, wait_random_min=100,
+       wait_random_max=200, stop_max_attempt_number=5)
+def describe_log_streams(logs, loggroups):
     unused_logstreams = []
     logstreams = []
     for loggroupname in loggroups:
         try:
             logstreams = logs.describe_log_streams(
-                logGroupName = loggroupname
+                logGroupName=loggroupname
             )
         except Exception, e:
             print(e)
 
-        
         logstreams = logstreams['logStreams']
         for logstream in logstreams:
             if logstream['storedBytes'] == 0:
-                unused_logstreams.append(logstream['logStreamName'])
+                raw_data = {"logGroupName": loggroupname,
+                            "logStreamName": logstream['logStreamName']}
+                unused_logstreams.append(raw_data)
 
-    print("unused logstreams")
     for logstream in unused_logstreams:
-        print(unused_logstreams)
+        print(logstream)
 
+
+def delete_log_group(logs, loggroups):
+    for loggroup in loggroups:
+        try:
+            logs.delete_log_group(
+                logGroupName=loggroup
+            )
+        except Exception, e:
+            print(e)
+
+
+# def delete_log_stream(logs, loggroups, logstreams):
 
 
 if __name__ == "__main__":
-    lambda_handler("asdf","asdf")
+    lambda_handler("asdf", "asdf")
