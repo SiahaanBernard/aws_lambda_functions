@@ -38,8 +38,8 @@ def describe_all_log_groups(logs):
     describe_log_streams(logs, used_loggroups)
 
 
-@retry(retry_on_exception=retry_on_request_limit_exceed, wait_random_min=100,
-       wait_random_max=200, stop_max_attempt_number=5)
+@retry(retry_on_exception=retry_on_request_limit_exceed, wait_random_min=4,
+       wait_random_max=8, stop_max_attempt_number=5)
 def describe_log_streams(logs, loggroups):
     unused_logstreams = []
     logstreams = []
@@ -70,8 +70,6 @@ def delete_log_group(logs, loggroups):
             )
         except Exception, e:
             print(e)
-
-
 # def delete_log_stream(logs, loggroups, logstreams):
 
 
