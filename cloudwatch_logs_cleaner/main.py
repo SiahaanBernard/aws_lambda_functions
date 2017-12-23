@@ -1,6 +1,4 @@
 import boto3
-import sys
-import time
 from retrying import retry
 
 
