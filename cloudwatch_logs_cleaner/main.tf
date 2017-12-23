@@ -35,8 +35,8 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 resource "aws_iam_role_policy" "lambda_policy" {
-  name   = "CleanupPolicy"
-  role   = "${aws_iam_role.lambda_role.arn}"
+  name   = "cleanup_policy"
+  role   = "${aws_iam_role.lambda_role.name}"
   policy = "${data.aws_iam_policy_document.cwlogs_policy.json}"
 }
 
@@ -66,12 +66,12 @@ resource "aws_lambda_function" "logs_cleaner_lambda" {
 
 resource "aws_cloudwatch_event_rule" "logs_cleanup_event" {
   name                = "logs_cleaner"
-  description         = "time to clean up logs"
+  description         = "logs_cleaner"
   schedule_expression = "cron(0 1 ? * * *)"
 }
 
 resource "aws_cloudwatch_event_target" "logs_cleanup_event_target" {
   target_id = "logs_cleanup_event_target"
-  rule      = "${aws_cloudwatch_event_rule.logs_cleanup_event.arn}"
+  rule      = "${aws_cloudwatch_event_rule.logs_cleanup_event.name}"
   arn       = "${aws_lambda_function.logs_cleaner_lambda.arn}"
 }
