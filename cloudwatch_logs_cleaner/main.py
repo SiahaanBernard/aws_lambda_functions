@@ -17,6 +17,7 @@ def lambda_handler(event, context):
     describe_all_log_groups(logs)
     unused_loggroups, used_loggroups = describe_all_log_groups(logs)
     unused_logstreams = describe_log_streams(logs, used_loggroups)
+    unused_loggroups, used_loggroups = describe_all_log_groups(logs)
     for loggroup in unused_loggroups:
         print(loggroup)
     for logstream in unused_logstreams:
