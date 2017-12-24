@@ -23,6 +23,9 @@ data "aws_iam_policy_document" "cwlogs_policy" {
       "logs:DescribeLogStreams",
       "logs:DeleteLogGroups",
       "logs:DeleteLogStreams",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
     ]
 
     resources = ["*"]
