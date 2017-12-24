@@ -90,6 +90,3 @@ def delete_log_stream(logs, logstreams):
             )
         except Exception, e:
             print(e)
-
-if __name__ == "__main__":
-    lambda_handler("asdf", "asdf")
