@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "cwlogs_policy" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name               = "iam_for_lambda"
+  name               = "logs_cleaner_role"
   assume_role_policy = "${data.aws_iam_policy_document.lambda_trust_policy.json}"
 }
 
@@ -45,23 +45,27 @@ resource "aws_iam_role_policy" "lambda_policy" {
 
 resource "null_resource" "pip" {
   triggers = {
-    main = "${base64sha256(file("function/main.py"))}"
+    main = "${base64sha256(file("function/lambda_function.py"))}"
+  }
+
+  provisioner "local-exec" {
+    command = "./deploy.sh"
   }
 }
 
 data "archive_file" "source" {
   type        = "zip"
-  source_dir  = "function"
-  output_path = "/tmp/logs_cleaner.zip"
+  source_dir  = "/tmp/function"
+  output_path = "/tmp/lambda_function.zip"
 
   depends_on = ["null_resource.pip"]
 }
 
 resource "aws_lambda_function" "logs_cleaner_lambda" {
-  filename         = "/tmp/logs_cleaner.zip"
+  filename         = "/tmp/lambda_function.zip"
   function_name    = "logs_cleaner"
   role             = "${aws_iam_role.lambda_role.arn}"
-  handler          = "logs_cleaner.lambda_handler"
+  handler          = "lambda_function.lambda_handler"
   source_code_hash = "${data.archive_file.source.output_base64sha256}"
   runtime          = "python2.7"
   timeout          = 120
@@ -70,7 +74,7 @@ resource "aws_lambda_function" "logs_cleaner_lambda" {
 resource "aws_cloudwatch_event_rule" "logs_cleanup_event" {
   name                = "logs_cleaner"
   description         = "logs_cleaner"
-  schedule_expression = "cron(0 1 ? * * *)"
+  schedule_expression = "cron(0 11 ? * MON *)"
 }
 
 resource "aws_cloudwatch_event_target" "logs_cleanup_event_target" {
