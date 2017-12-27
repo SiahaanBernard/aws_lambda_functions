@@ -20,8 +20,8 @@ def lambda_handler(event, context):
         print(loggroup)
     for logstream in unused_logstreams:
         print(logstream)
-    delete_log_group(unused_loggroups)
-    delete_log_stream(unused_logstreams)
+    delete_log_group(logs, unused_loggroups)
+    delete_log_stream(logs, unused_logstreams)
 
 
 def describe_all_log_groups(logs):
