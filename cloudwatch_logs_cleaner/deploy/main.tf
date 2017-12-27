@@ -21,8 +21,8 @@ data "aws_iam_policy_document" "cwlogs_policy" {
     actions = [
       "logs:DescribeLogGroups",
       "logs:DescribeLogStreams",
-      "logs:DeleteLogGroups",
-      "logs:DeleteLogStreams",
+      "logs:DeleteLogGroup",
+      "logs:DeleteLogStream",
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
