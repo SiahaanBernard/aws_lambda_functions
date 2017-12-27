@@ -8,6 +8,6 @@ else
     rm -rf /tmp/function/*
 fi
 
-cp function/* /tmp/function
+cp ../lambda_function.yml /tmp/function
 
-pip install -r function/requirements.txt -t /tmp/function
+pip install -r ../requirements.txt -t /tmp/function

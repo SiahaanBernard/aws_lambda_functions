@@ -45,7 +45,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 
 resource "null_resource" "pip" {
   triggers = {
-    main = "${base64sha256(file("function/lambda_function.py"))}"
+    main = "${base64sha256(file("../lambda_function.py"))}"
   }
 
   provisioner "local-exec" {
